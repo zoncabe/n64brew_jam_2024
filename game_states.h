@@ -8,15 +8,6 @@
 #define GAME_OVER 4
 
 
-// structures
-
-typedef struct {
-
-    uint8_t state;
-
-} GameState;
-
-
 // function prototypes
 
 void gameState_setIntro();
@@ -25,6 +16,20 @@ void gameState_setGameplay(Screen* screen, TimeData* timing, ControllerData* con
 void gameState_setPause();
 void gameState_setGameOver();
 
+void game_setState(uint8_t state, Screen* screen, TimeData* timing, ControllerData* control);
+
+
+// function implementations
+
+void gameState_setIntro()
+{
+    // code for the intro state
+}
+
+void gameState_setMainMenu()
+{
+    // code for the main menu state
+}
 
 void gameState_setGameplay(Screen* screen, TimeData* timing, ControllerData* control)
 {
@@ -98,6 +103,38 @@ void gameState_setGameplay(Screen* screen, TimeData* timing, ControllerData* con
 	t3d_model_free(room.model);
 
 	t3d_destroy();
+}
+
+void gameState_setPause()
+{
+    // code for the pause state
+}
+
+void gameState_setGameOver()
+{
+    // code for the game over state
+}
+
+void game_setState(uint8_t state, Screen* screen, TimeData* timing, ControllerData* control)
+{
+    switch(state)
+    {
+        case INTRO:
+            gameState_setIntro();
+            break;
+        case MAIN_MENU:
+            gameState_setMainMenu();
+            break;
+        case GAMEPLAY:
+            gameState_setGameplay(screen, timing, control);
+            break;
+        case PAUSE:
+            gameState_setPause();
+            break;
+        case GAME_OVER:
+            gameState_setGameOver();
+            break;
+    }
 }
 
 #endif

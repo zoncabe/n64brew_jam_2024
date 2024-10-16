@@ -44,8 +44,10 @@ int main()
 	time_init(&timing);
 
 	ControllerData control;
-	
-	gameState_setGameplay(&screen, &timing, &control);
+
+	uint8_t game_state = GAMEPLAY;
+
+	game_setState(game_state, &screen, &timing, &control);
 
 	return 0;  
 }
