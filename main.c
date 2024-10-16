@@ -24,6 +24,8 @@
 
 #include "scene/scenery.h"
 
+#include "ui/ui.h"
+
 #include "game_states.h"
 
 int main()
@@ -45,7 +47,7 @@ int main()
 
 	ControllerData control;
 
-	uint8_t game_state = GAMEPLAY;
+	uint8_t game_state = MAIN_MENU;
 
 	game_setState(game_state, &screen, &timing, &control);
 

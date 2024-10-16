@@ -11,7 +11,7 @@
 // function prototypes
 
 void gameState_setIntro();
-void gameState_setMainMenu();
+void gameState_setMainMenu(Screen* screen, TimeData* timing, ControllerData* control);
 void gameState_setGameplay(Screen* screen, TimeData* timing, ControllerData* control);
 void gameState_setPause();
 void gameState_setGameOver();
@@ -26,9 +26,59 @@ void gameState_setIntro()
     // code for the intro state
 }
 
-void gameState_setMainMenu()
+void gameState_setMainMenu(Screen* screen, TimeData* timing, ControllerData* control)
 {
-    // code for the main menu state
+	screen_initGameplayViewport(screen);
+	t3d_init((T3DInitParams){});
+
+	ui_init();
+
+	Camera camera = camera_create();
+
+	//light
+	LightData light = light_create();
+
+	//scenery
+	Scenery room = scenery_create(0, "rom:/room.t3dm");
+
+	Scenery n64logo = scenery_create(0, "rom:/n64logo.t3dm");
+
+	for(;;)
+	{
+		// ======== Update ======== //
+
+		time_setData(timing);
+		controllerData_getInputs(control);
+
+		ui_poll();
+
+		cameraControl_setOrbitalMovement(&camera, control);
+		camera_getOrbitalPosition(&camera, (Vector3){0, 0, 0}, timing->frame_time_s);
+		camera_set(&camera, screen);
+
+		scenery_set(&room);
+		scenery_set(&n64logo);
+		n64logo.position = (Vector3){200, 200, 0};
+
+		// ======== Draw ======== //
+		
+		screen_clear(screen);
+		screen_clearGameplayViewport(screen);
+	
+		light_set(&light);
+    
+		t3d_matrix_push_pos(1);
+
+		scenery_draw(&n64logo);
+		scenery_draw(&room);
+   
+   		t3d_matrix_pop(1);
+
+		ui_draw();
+
+		rdpq_detach_show();
+		
+	}
 }
 
 void gameState_setGameplay(Screen* screen, TimeData* timing, ControllerData* control)
@@ -123,7 +173,7 @@ void game_setState(uint8_t state, Screen* screen, TimeData* timing, ControllerDa
             gameState_setIntro();
             break;
         case MAIN_MENU:
-            gameState_setMainMenu();
+            gameState_setMainMenu(screen, timing, control);
             break;
         case GAMEPLAY:
             gameState_setGameplay(screen, timing, control);
