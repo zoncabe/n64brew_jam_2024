@@ -109,7 +109,7 @@ void gameState_setGameplay(Screen* screen, TimeData* timing, ControllerData* con
 		time_setData(timing);
 		controllerData_getInputs(control);
 
-		actorControl_setData(&player, control, timing->frame_time_s, camera.angle_around_barycenter, camera.offset_angle);
+		actor_setControlData(&player, control, timing->frame_time_s, camera.angle_around_barycenter, camera.offset_angle);
 		actor_setState(&player, player.state);
 		actor_setMotion(&player, timing->frame_time_s);
 		actor_setAnimation(&player, &player_animation, timing->frame_time_s, &syncPoint);
@@ -169,21 +169,26 @@ void game_setState(uint8_t state, Screen* screen, TimeData* timing, ControllerDa
 {
     switch(state)
     {
-        case INTRO:
+        case INTRO:{
             gameState_setIntro();
             break;
-        case MAIN_MENU:
+		}
+        case MAIN_MENU:{
             gameState_setMainMenu(screen, timing, control);
             break;
-        case GAMEPLAY:
+		}
+        case GAMEPLAY:{
             gameState_setGameplay(screen, timing, control);
             break;
-        case PAUSE:
+		}
+        case PAUSE:{
             gameState_setPause();
             break;
-        case GAME_OVER:
+		}
+        case GAME_OVER:{
             gameState_setGameOver();
             break;
+		}
     }
 }
 

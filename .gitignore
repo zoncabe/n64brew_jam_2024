@@ -1,4 +1,5 @@
-filesystem/*
-build/*
-.vscode/*
-*.z64
+
+build/
+filesystem/
+.vscode/
+game.z64
