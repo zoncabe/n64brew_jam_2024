@@ -7,22 +7,20 @@
 #include <libdragon.h>
 
 // COLORS
-extern color_t RED;
-extern color_t ORANGE;
-extern color_t YELLOW;
-extern color_t GREEN;
-extern color_t BLUE;
-extern color_t INDIGO;
-extern color_t VIOLET;
-extern color_t BLACK;
-extern color_t WHITE;
-extern color_t GREY;
-
-extern color_t DARK_RED;
-extern color_t DARK_GREEN;
-
-mu_Color convert_color_to_mu(color_t src);
-color_t convert_mu_to_color(mu_Color src);
+extern const uint8_t RED[4];
+extern const uint8_t ORANGE[4];
+extern const uint8_t YELLOW[4];
+extern const uint8_t GREEN[4];
+extern const uint8_t BLUE[4];
+extern const uint8_t INDIGO[4];
+extern const uint8_t VIOLET[4];
+extern const uint8_t BLACK[4];
+extern const uint8_t WHITE[4];
+extern const uint8_t GREY[4];
+extern const uint8_t DARK_RED[4];
+extern const uint8_t DARK_GREEN[4];
+const color_t pack_color(const uint8_t src[]);
+mu_Color pack_color_to_mu(const uint8_t src[]);
 
 void mu64_init(joypad_port_t joypad_idx, uint8_t font_idx);
 

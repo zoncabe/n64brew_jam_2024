@@ -1,15 +1,30 @@
 #include <libdragon.h>
 #include "../lib/micro-ui/microuiN64.h"
 
+#define FONT_ID_GAME 2
+
+enum FONT_STYLES 
+{
+    STYLE_DEFAULT,
+    STYLE_COUNT
+};
 
 // Step 1/5: Make sure you have a small font loaded
 uint8_t ui_register_font(void)
 {
+    // Load font64 and register to font index 2, 0 reserved by the SDK, 1 should be reserved debug output
     rdpq_font_t *font = rdpq_font_load("rom:/TitanOne-Regular.font64");
-    static uint8_t font_id = 2;
+    static uint8_t font_id = FONT_ID_GAME;
     rdpq_text_register_font(font_id, font);
 
-    mu64_init(JOYPAD_PORT_1, font_id);
+    // Create and register font style
+    rdpq_fontstyle_t txt_game_fontStyle;
+    txt_game_fontStyle.color = pack_color(BLACK);
+    rdpq_font_style(
+        font, 
+        STYLE_DEFAULT, 
+        &txt_game_fontStyle
+    );
 
     return font_id;
 }
@@ -27,16 +42,9 @@ void ui_poll (void)
     mu64_start_frame();
 }
 
-// Step 4/5: call this AFTER your game logic ends each frame
-void ui_update(void)
+// Basic window, you can add inputs to modify variables
+void ui_main_menu(void)
 {
-
-    mu64_set_mouse_speed(0.04f * display_get_delta_time()); // keep cursor speed constant
-
-    // You can create windows at any point in your game-logic.
-    // This does not render the window directly, which is handled later in a single batch.
-
-    // Basic window, you can add inputs to modify variables
     if (mu_begin_window_ex(&mu_ctx, "       N64BREW GAME JAM 2024", mu_rect(32, 64, 160, 80), (MU_OPT_NOINTERACT | MU_OPT_NOCLOSE) ))
     {
 
@@ -57,6 +65,17 @@ void ui_update(void)
 
         mu_end_window(&mu_ctx);
     }
+}
+
+// Step 4/5: call this AFTER your game logic ends each frame
+void ui_update(void)
+{
+
+    mu64_set_mouse_speed(0.04f * display_get_delta_time()); // keep cursor speed constant
+
+    // You can create windows at any point in your game-logic.
+    // This does not render the window directly, which is handled later in a single batch.
+    ui_main_menu();
 
     mu64_end_frame();
 }
