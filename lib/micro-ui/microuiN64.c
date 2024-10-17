@@ -68,13 +68,14 @@ void mu64_init(joypad_port_t joypad_idx, uint8_t font_idx)
   mu_ctx._style.spacing = 2;
   mu_ctx._style.indent = 2;
   mu_ctx._style.thumb_size = 6;
-  mu_ctx._style.colors[MU_COLOR_BORDER]      = pack_color_to_mu(INDIGO);
+  mu_ctx._style.colors[MU_COLOR_BORDER]      = pack_color_to_mu(BLACK);
   mu_ctx._style.colors[MU_COLOR_WINDOWBG]    = pack_color_to_mu(N_BLUE);
   mu_ctx._style.colors[MU_COLOR_TITLEBG]     = pack_color_to_mu(N_YELLOW);
   mu_ctx._style.colors[MU_COLOR_TITLETEXT]   = pack_color_to_mu(BLACK);
   mu_ctx._style.colors[MU_COLOR_PANELBG]     = pack_color_to_mu(N_BLUE);
   mu_ctx._style.colors[MU_COLOR_BUTTON]      = pack_color_to_mu(DARK_GREEN);
   mu_ctx._style.colors[MU_COLOR_BUTTONHOVER] = pack_color_to_mu(GREEN);
+  mu_ctx._style.colors[MU_COLOR_BUTTONFOCUS] = pack_color_to_mu(N_GREEN);
   mu_ctx._style.colors[MU_COLOR_BASE]        = pack_color_to_mu(BLACK);
   mu_ctx._style.colors[MU_COLOR_BASEHOVER]   = pack_color_to_mu(N_GREEN);
   mu_ctx._style.colors[MU_COLOR_SCROLLBASE]  = pack_color_to_mu(DARK_RED);

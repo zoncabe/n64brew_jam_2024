@@ -35,8 +35,8 @@ enum ColorNames
     T_WHITE,
     T_GREY,
     // Darker Variants
-    DARK_GREEN,
     DARK_RED,
+    DARK_GREEN,
     // N64 Logo Colors
     N_RED,
     N_YELLOW,
