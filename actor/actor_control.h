@@ -7,7 +7,7 @@
 void actorControl_setJump(Actor* actor, ControllerData *control, float frame_time);
 void actorControl_setRoll(Actor* actor, ControllerData *control);
 void actorControl_moveWithStick(Actor* actor, ControllerData *control, float camera_angle_around, float camera_offset);
-void actorControl_setData(Actor* actor, ControllerData *control, float frame_time, float camera_angle_around, float camera_offset);
+void actor_setControlData(Actor* actor, ControllerData *control, float frame_time, float camera_angle_around, float camera_offset);
 
 
 // function implementations
@@ -70,7 +70,7 @@ void actorControl_moveWithStick(Actor *actor, ControllerData *control, float cam
 }
 
 
-void actorControl_setData(Actor* actor, ControllerData *control, float frame_time, float camera_angle_around, float camera_offset)
+void actor_setControlData(Actor* actor, ControllerData *control, float frame_time, float camera_angle_around, float camera_offset)
 {    
    
     actorControl_setJump(actor, control, frame_time);

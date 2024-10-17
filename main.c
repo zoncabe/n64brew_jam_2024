@@ -33,20 +33,18 @@ int main()
 	asset_init_compression(2);
 
 	dfs_init(DFS_DEFAULT_LOCATION);
+	rdpq_init();
 
 	Screen screen;
 	screen_init(&screen);
 
-	rdpq_init();
+	ControllerData control;
 	joypad_init();
 
 	TimeData timing;
 	time_init(&timing);
 
-	ControllerData control;
-
 	uint8_t game_state = GAMEPLAY;
-
 	game_setState(game_state, &screen, &timing, &control);
 
 	return 0;  
