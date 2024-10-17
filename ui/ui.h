@@ -54,7 +54,11 @@ void ui_poll (void)
 // Basic window, you can add inputs to modify variables
 void ui_main_menu(void)
 {
-    if (mu_begin_window_ex(&mu_ctx, "       N64BREW GAME JAM 2024", mu_rect(32, 64, 160, 80), (MU_OPT_NOINTERACT | MU_OPT_NOCLOSE) ))
+    mu_ctx._style.colors[MU_COLOR_PANELBG]  = pack_color_to_mu(N_BLUE);
+    mu_ctx._style.colors[MU_COLOR_WINDOWBG] = pack_color_to_mu(N_BLUE);
+    
+
+    if (mu_begin_window_ex(&mu_ctx, "       N64BREW GAME JAM 2024", mu_rect(32, 32, 160, 80), (MU_OPT_NOINTERACT | MU_OPT_NOCLOSE) ))
     {
 
         if (mu_header_ex(&mu_ctx, "INFO", MU_OPT_CLOSED | MU_OPT_AUTOSIZE)) {
@@ -76,6 +80,49 @@ void ui_main_menu(void)
     }
 }
 
+void ui_textbox(void)
+{
+
+    mu_ctx._style.colors[MU_COLOR_BASEHOVER]  = pack_color_to_mu(DARK_GREY);
+    mu_ctx._style.colors[MU_COLOR_WINDOWBG] = pack_color_to_mu(BLACK);
+    char *text;
+    const int charWidth = 10;
+    uint8_t dialogID = 0;
+    int dialogLines;
+    int textBoxOffset;
+    int textPos[4];
+    switch(dialogID)
+    {
+        case 0:
+            dialogLines = 5; // parse
+            textBoxOffset = ((dialogLines+1) * charWidth);
+            textPos[2] = ((dialogLines+1) * (charWidth*2));
+            textPos[3] = (dialogLines * (charWidth+1));
+            textPos[0] = 32; // parse
+            textPos[1] = 128; // parse
+            text = "\n\
+                    I'm Spaghet, boo!\n\
+                    Spaghet! Spooked ya!\n\
+                    Spaghet! Spooked ya!\n\
+                    Spaghet! Spooked ya!\n\
+                    Spaghet! Spooked ya!"; // parse, format with leading line and line breaks
+            break;
+    }
+
+    mu_Rect textWindow = mu_rect(textPos[0],textPos[1],textPos[2],textPos[3]);
+    mu_Rect textBox = mu_rect(textPos[0]-32,textPos[1]-textBoxOffset,textPos[2]*2,textPos[3]+textBoxOffset);
+
+    if (mu_begin_window_ex(&mu_ctx, "", textWindow, (MU_OPT_NOTITLE | MU_OPT_POPUP)))
+    {
+        mu_Id id = mu_get_id(&mu_ctx, &text, sizeof(text));
+        mu_textbox_raw(&mu_ctx, text, strlen(text), id, textBox, 0);
+        if (mu_ctx.mouse_pressed == MU_MOUSE_LEFT) {
+            mu_ctx.hover_root->open = 0;
+        }
+        mu_end_window(&mu_ctx);
+    }
+}
+
 // Step 4/5: call this AFTER your game logic ends each frame
 void ui_update(void)
 {
@@ -85,6 +132,7 @@ void ui_update(void)
     // You can create windows at any point in your game-logic.
     // This does not render the window directly, which is handled later in a single batch.
     ui_main_menu();
+    ui_textbox();
 
     mu64_end_frame();
 }
