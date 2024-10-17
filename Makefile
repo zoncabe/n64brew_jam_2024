@@ -27,7 +27,14 @@ filesystem/%.t3dm: assets/%.glb
 	$(T3D_GLTF_TO_3D) "$<" $@ --base-scale=1
 	$(N64_BINDIR)/mkasset -c 2 -o filesystem $@
 
-$(BUILD_DIR)/game.dfs: $(assets_conv)
+collision_files = $(wildcard assets/levels/*.json)
+collision_assets = $(addprefix filesystem/,$(notdir $(collision_files:%.json=%.json)))
+filesystem/%.json: $(collision_files)
+	@mkdir -p $(dir $@)
+	@echo "    [Collision JSON] $@"
+	@cp "$<" $(dir $@)
+
+$(BUILD_DIR)/game.dfs: $(assets_conv) $(collision_assets)
 $(BUILD_DIR)/game.elf: $(src:%.c=$(BUILD_DIR)/%.o)
 
 game.z64: N64_ROM_TITLE="Tiny3D - Model"
