@@ -22,35 +22,13 @@ static float cursor_speed = 0.25f;
 static float n64_mouse_speed = 200.0f;
 static bool is_n64_mouse = false;
 
-// COLORS
-const uint8_t RED[4] = {209, 0, 0, 255};
-const uint8_t ORANGE[4] = {255, 102, 34, 255};
-const uint8_t YELLOW[4] = {200, 180, 33, 255};
-const uint8_t GREEN[4] = {51, 221, 0, 255};
-const uint8_t BLUE[4] = {17, 51, 204, 255};
-const uint8_t INDIGO[4] = {34, 0, 102, 255};
-const uint8_t VIOLET[4] = {51, 0, 68, 255};
-const uint8_t BLACK[4] = {0,0,0,255};
-const uint8_t WHITE[4] = {255, 255, 255, 255};
-const uint8_t GREY[4] = {192, 192, 192, 255};
-const uint8_t DARK_RED[4] = {130, 0, 0, 25};
-const uint8_t DARK_GREEN[4] = {0, 100, 0, 255};
 
-const color_t pack_color(const uint8_t src[]) {
-  color_t dst;
-  dst.r = src[0];
-  dst.g = src[1];
-  dst.b = src[2];
-  dst.a = src[3];
-  return dst;
-}
-
-mu_Color pack_color_to_mu(const uint8_t src[]) {
+mu_Color pack_color_to_mu(int colIdx) {
   mu_Color dst;
-  dst.r = src[0];
-  dst.g = src[1];
-  dst.b = src[2];
-  dst.a = src[3];
+  dst.r = COLORS[colIdx][0];
+  dst.g = COLORS[colIdx][1];
+  dst.b = COLORS[colIdx][2];
+  dst.a = COLORS[colIdx][3];
   return dst;
 }
 
@@ -91,16 +69,16 @@ void mu64_init(joypad_port_t joypad_idx, uint8_t font_idx)
   mu_ctx._style.indent = 2;
   mu_ctx._style.thumb_size = 6;
   mu_ctx._style.colors[MU_COLOR_BORDER]      = pack_color_to_mu(INDIGO);
-  mu_ctx._style.colors[MU_COLOR_WINDOWBG]    = pack_color_to_mu(VIOLET);
-  mu_ctx._style.colors[MU_COLOR_TITLEBG]     = pack_color_to_mu(ORANGE);
+  mu_ctx._style.colors[MU_COLOR_WINDOWBG]    = pack_color_to_mu(N_BLUE);
+  mu_ctx._style.colors[MU_COLOR_TITLEBG]     = pack_color_to_mu(N_YELLOW);
   mu_ctx._style.colors[MU_COLOR_TITLETEXT]   = pack_color_to_mu(BLACK);
-  mu_ctx._style.colors[MU_COLOR_PANELBG]     = pack_color_to_mu(BLUE);
+  mu_ctx._style.colors[MU_COLOR_PANELBG]     = pack_color_to_mu(N_BLUE);
   mu_ctx._style.colors[MU_COLOR_BUTTON]      = pack_color_to_mu(DARK_GREEN);
   mu_ctx._style.colors[MU_COLOR_BUTTONHOVER] = pack_color_to_mu(GREEN);
   mu_ctx._style.colors[MU_COLOR_BASE]        = pack_color_to_mu(BLACK);
-  mu_ctx._style.colors[MU_COLOR_BASEHOVER]   = pack_color_to_mu(GREY);
+  mu_ctx._style.colors[MU_COLOR_BASEHOVER]   = pack_color_to_mu(N_GREEN);
   mu_ctx._style.colors[MU_COLOR_SCROLLBASE]  = pack_color_to_mu(DARK_RED);
-  mu_ctx._style.colors[MU_COLOR_SCROLLTHUMB] = pack_color_to_mu(RED);
+  mu_ctx._style.colors[MU_COLOR_SCROLLTHUMB] = pack_color_to_mu(N_RED);
 
   cursor_active = true;
   is_n64_mouse = joypad_get_identifier(joypad_index) == JOYBUS_IDENTIFIER_N64_MOUSE;

@@ -2,25 +2,12 @@
 #define H_MICROUI_N64
 
 #include "microui.h"
+#include "../kodachrome/kodachrome.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <libdragon.h>
 
-// COLORS
-extern const uint8_t RED[4];
-extern const uint8_t ORANGE[4];
-extern const uint8_t YELLOW[4];
-extern const uint8_t GREEN[4];
-extern const uint8_t BLUE[4];
-extern const uint8_t INDIGO[4];
-extern const uint8_t VIOLET[4];
-extern const uint8_t BLACK[4];
-extern const uint8_t WHITE[4];
-extern const uint8_t GREY[4];
-extern const uint8_t DARK_RED[4];
-extern const uint8_t DARK_GREEN[4];
-const color_t pack_color(const uint8_t src[]);
-mu_Color pack_color_to_mu(const uint8_t src[]);
+mu_Color pack_color_to_mu(int colIdx);
 
 void mu64_init(joypad_port_t joypad_idx, uint8_t font_idx);
 

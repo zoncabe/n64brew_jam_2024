@@ -6,8 +6,9 @@ include $(T3D_INST)/t3d.mk
 N64_CFLAGS += -std=gnu2x
 
 src = main.c \
-      lib/micro-ui/microui.c \
-      lib/micro-ui/microuiN64.c
+	lib/kodachrome/kodachrome.c \
+	lib/micro-ui/microui.c \
+	lib/micro-ui/microuiN64.c
 
 assets_png = $(wildcard assets/*.png)
 assets_gltf = $(wildcard assets/*.glb)

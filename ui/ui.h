@@ -20,7 +20,7 @@ uint8_t ui_register_font(void)
 
     // Create and register font style
     rdpq_fontstyle_t txt_game_fontStyle;
-    txt_game_fontStyle.color = pack_color(WHITE);
+    txt_game_fontStyle.color = pack_color_32(WHITE);
     rdpq_font_style(
         font, 
         STYLE_DEFAULT, 
@@ -28,7 +28,7 @@ uint8_t ui_register_font(void)
     );
 
     rdpq_fontstyle_t txt_title_fontStyle;
-    txt_title_fontStyle.color = pack_color(BLACK);
+    txt_title_fontStyle.color = pack_color_32(BLACK);
     rdpq_font_style(
         font, 
         STYLE_TITLE, 
