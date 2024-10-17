@@ -7,6 +7,8 @@ enum FONT_STYLES
 {
     STYLE_DEFAULT,
     STYLE_TITLE,
+    STYLE_BRIGHT,
+    STYLE_GREEN,
     STYLE_COUNT
 };
 
@@ -18,7 +20,7 @@ uint8_t ui_register_font(void)
     static uint8_t font_id = FONT_ID_GAME;
     rdpq_text_register_font(font_id, font);
 
-    // Create and register font style
+    // Create and register font styles
     rdpq_fontstyle_t txt_game_fontStyle;
     txt_game_fontStyle.color = pack_color_32(WHITE);
     rdpq_font_style(
@@ -33,6 +35,22 @@ uint8_t ui_register_font(void)
         font, 
         STYLE_TITLE, 
         &txt_title_fontStyle
+    );
+
+    rdpq_fontstyle_t txt_bright_fontStyle;
+    txt_bright_fontStyle.color = pack_color_32(YELLOW);
+    rdpq_font_style(
+        font, 
+        STYLE_BRIGHT, 
+        &txt_bright_fontStyle
+    );
+
+    rdpq_fontstyle_t txt_green_fontStyle;
+    txt_green_fontStyle.color = pack_color_32(GREEN);
+    rdpq_font_style(
+        font, 
+        STYLE_GREEN, 
+        &txt_green_fontStyle
     );
 
     return font_id;
@@ -60,18 +78,20 @@ void ui_main_menu(void)
 
     if (mu_begin_window_ex(&mu_ctx, "       N64BREW GAME JAM 2024", mu_rect(32, 32, 160, 80), (MU_OPT_NOINTERACT | MU_OPT_NOCLOSE) ))
     {
-
+        mu_ctx._style.colors[MU_COLOR_TEXT]  = pack_color_to_mu(WHITE);
         if (mu_header_ex(&mu_ctx, "INFO", MU_OPT_CLOSED | MU_OPT_AUTOSIZE)) {
+            mu_ctx._style.colors[MU_COLOR_TEXT]  = pack_color_to_mu(YELLOW);
             mu_label(&mu_ctx, "Yo, what up?");
         }
 
+        mu_ctx._style.colors[MU_COLOR_TEXT]  = pack_color_to_mu(WHITE);
         if (mu_header_ex(&mu_ctx, "STATS", MU_OPT_CLOSED | MU_OPT_AUTOSIZE)) {
+            mu_ctx._style.colors[MU_COLOR_TEXT]  = pack_color_to_mu(GREEN);
             float fps = display_get_fps();
 
             char fps_buffer[16] = {0};
             sprintf(fps_buffer, "FPS: %.2f", fps);
             mu_label(&mu_ctx, fps_buffer);
-
             sprintf(fps_buffer, "ms: %.4f", display_get_delta_time());
             mu_label(&mu_ctx, fps_buffer);
         }
@@ -85,6 +105,7 @@ void ui_textbox(void)
 
     mu_ctx._style.colors[MU_COLOR_BASEHOVER]  = pack_color_to_mu(DARK_GREY);
     mu_ctx._style.colors[MU_COLOR_WINDOWBG] = pack_color_to_mu(BLACK);
+    mu_ctx._style.colors[MU_COLOR_TEXT]  = pack_color_to_mu(YELLOW);
     char *text;
     const int charWidth = 10;
     uint8_t dialogID = 0;

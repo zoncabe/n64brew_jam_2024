@@ -22,16 +22,6 @@ static float cursor_speed = 0.25f;
 static float n64_mouse_speed = 200.0f;
 static bool is_n64_mouse = false;
 
-
-mu_Color pack_color_to_mu(int colIdx) {
-  mu_Color dst;
-  dst.r = COLORS[colIdx][0];
-  dst.g = COLORS[colIdx][1];
-  dst.b = COLORS[colIdx][2];
-  dst.a = COLORS[colIdx][3];
-  return dst;
-}
-
 // Approx. for text size
 static int text_width(mu_Font fnt, const char *text, int len) {
   if (len == -1) { len = strlen(text); }
@@ -131,20 +121,52 @@ void mu64_end_frame()
   mu_end(&mu_ctx);
 }
 
+/*~~s4ys~~*/
 // TODO: Idk if this is more or less hacky, Max didn't really give a lot of options for changing the text color
+mu_Color pack_color_to_mu(int colIdx) {
+  mu_Color dst;
+  dst.r = COLORS[colIdx][0];
+  dst.g = COLORS[colIdx][1];
+  dst.b = COLORS[colIdx][2];
+  dst.a = COLORS[colIdx][3];
+  return dst;
+}
+
+void mu64_init_style_map(ColorStyleMap *style_map) {
+  style_map[0].color = pack_color_to_mu(WHITE);
+  style_map[0].style_id = 0;   // STYLE_DEFAULT
+
+  style_map[1].color = pack_color_to_mu(BLACK);
+  style_map[1].style_id = 1;   // STYLE_TITLE
+
+  style_map[2].color = pack_color_to_mu(YELLOW);
+  style_map[2].style_id = 2;   // STYLE_BRIGHT
+
+  style_map[3].color = pack_color_to_mu(GREEN);
+  style_map[3].style_id = 3;   // STYLE_GREEN
+}
+
 bool mu64_colors_are_equal(mu_Color c1, mu_Color c2) {
   return (c1.r == c2.r && c1.g == c2.g && c1.b == c2.b && c1.a == c2.a);
 }
 
-void mu64_update_text_style(mu_Command *cmd, rdpq_textparms_t *txt_param)
-{
-  if (mu64_colors_are_equal(cmd->text.color, pack_color_to_mu(BLACK))) {
-    txt_param->style_id = 1; // STYLE_TITLE
-  } else {
-    txt_param->style_id = 0; // STYLE_DEFAULT
+int mu64_get_style_id(mu_Color color) {
+  ColorStyleMap style_map[4]; // Adjust size if adding more styles
+  mu64_init_style_map(style_map);
 
+  for (size_t i = 0; i < sizeof(style_map) / sizeof(style_map[0]); ++i) {
+    if (mu64_colors_are_equal(color, style_map[i].color)) {
+      return style_map[i].style_id;
+    }
   }
+
+  return 0; // Default to STYLE_DEFAULT
 }
+
+void mu64_update_text_style(mu_Command *cmd, rdpq_textparms_t *txt_param) {
+  txt_param->style_id = mu64_get_style_id(cmd->text.color);
+}
+/*~~s4ys~~*/
 
 void mu64_draw()
 {
