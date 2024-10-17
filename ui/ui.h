@@ -6,7 +6,7 @@
 uint8_t ui_register_font(void)
 {
     rdpq_font_t *font = rdpq_font_load("rom:/TitanOne-Regular.font64");
-    static uint8_t font_id = 1;
+    static uint8_t font_id = 2;
     rdpq_text_register_font(font_id, font);
 
     mu64_init(JOYPAD_PORT_1, font_id);
@@ -37,41 +37,24 @@ void ui_update(void)
     // This does not render the window directly, which is handled later in a single batch.
 
     // Basic window, you can add inputs to modify variables
-    if (mu_begin_window_ex(&mu_ctx, "N64Brew Game Jam 2024", mu_rect(12, 20, 140, 140), (MU_OPT_NORESIZE | MU_OPT_NOSCROLL | MU_OPT_NOCLOSE) ))
+    if (mu_begin_window_ex(&mu_ctx, "       N64BREW GAME JAM 2024", mu_rect(32, 64, 160, 80), (MU_OPT_NOINTERACT | MU_OPT_NOCLOSE) ))
     {
 
-        if (mu_header_ex(&mu_ctx, "Info", MU_OPT_EXPANDED)) {
+        if (mu_header_ex(&mu_ctx, "INFO", MU_OPT_CLOSED | MU_OPT_AUTOSIZE)) {
             mu_label(&mu_ctx, "Yo, what up?");
         }
 
-        if (mu_header_ex(&mu_ctx, "Time", MU_OPT_EXPANDED)) {
+        if (mu_header_ex(&mu_ctx, "STATS", MU_OPT_CLOSED | MU_OPT_AUTOSIZE)) {
             float fps = display_get_fps();
 
             char fps_buffer[16] = {0};
-            sprintf(fps_buffer, "FPS: %.4f", fps);
+            sprintf(fps_buffer, "FPS: %.2f", fps);
             mu_label(&mu_ctx, fps_buffer);
 
             sprintf(fps_buffer, "ms: %.4f", display_get_delta_time());
             mu_label(&mu_ctx, fps_buffer);
         }
 
-        mu_end_window(&mu_ctx);
-    }
-
-    // you can also temp. changes styles and request information about the window itself
-    mu_Color oldColor = mu_ctx._style.colors[MU_COLOR_WINDOWBG];
-
-    mu_ctx._style.colors[MU_COLOR_WINDOWBG] = oldColor;
-
-    // Fixed, static window
-    if (mu_begin_window_ex(&mu_ctx, "Bar", mu_rect(0, display_get_height() -16, 320, 16), MU_OPT_NOTITLE | MU_OPT_NORESIZE | MU_OPT_NOSCROLL | MU_OPT_NOCLOSE)) {
-        mu_layout_begin_column(&mu_ctx);
-        mu_layout_row(&mu_ctx, 4, (int[]) { 48, 48, 92, 130 }, 0);
-
-        mu_label(&mu_ctx, "");
-        mu_label(&mu_ctx, "(Press L to toggle UI)");
-
-        mu_layout_end_column(&mu_ctx);
         mu_end_window(&mu_ctx);
     }
 

@@ -6,7 +6,7 @@
 #include "microuiN64.h"
 #include <libdragon.h>
 
-#define FONT_SIZE  4
+#define FONT_SIZE  10
 #define TILE_WIDTH 10
 
 mu_Context mu_ctx;
@@ -21,6 +21,39 @@ static bool cursor_active = true;
 static float cursor_speed = 0.25f;
 static float n64_mouse_speed = 200.0f;
 static bool is_n64_mouse = false;
+
+// COLORS
+color_t RED = {209, 0, 0, 255};
+color_t ORANGE = {255, 102, 34, 255};
+color_t YELLOW = {200, 180, 33, 255};
+color_t GREEN = {51, 221, 0, 255};
+color_t BLUE = {17, 51, 204, 255};
+color_t INDIGO = {34, 0, 102, 255};
+color_t VIOLET = {51, 0, 68, 255};
+color_t BLACK = {0,0,0,255};
+color_t WHITE = {255, 255, 255, 255};
+color_t GREY = {192, 192, 192, 255};
+
+color_t DARK_RED = {130, 0, 0, 25};
+color_t DARK_GREEN = {0, 100, 0, 255};
+
+mu_Color convert_color_to_mu(color_t src) {
+  mu_Color dst;
+  dst.r = src.r;
+  dst.g = src.g;
+  dst.b = src.b;
+  dst.a = src.a;
+  return dst;
+}
+
+color_t convert_mu_to_color(mu_Color src) {
+  color_t dst;
+  dst.r = src.r;
+  dst.g = src.g;
+  dst.b = src.b;
+  dst.a = src.a;
+  return dst;
+}
 
 // Approx. for text size
 static int text_width(mu_Font fnt, const char *text, int len) {
@@ -53,13 +86,21 @@ void mu64_init(joypad_port_t joypad_idx, uint8_t font_idx)
   mu_init(&mu_ctx);
   mu_ctx.text_width = text_width;
   mu_ctx.text_height = text_height;
-  mu_ctx._style.padding = 1;
-  mu_ctx._style.title_height = 12;
-  mu_ctx._style.spacing = 1;
-  mu_ctx._style.indent = 6;
-  mu_ctx._style.thumb_size = 8;
-  mu_ctx._style.colors[MU_COLOR_TITLEBG] = (mu_Color){0x1c, 0x4f, 0x97, 0xFF};
-  mu_ctx._style.colors[MU_COLOR_BORDER]  = (mu_Color){0x10, 0x10, 0x10, 0xFF};
+  mu_ctx._style.padding = 2;
+  mu_ctx._style.title_height = 20;
+  mu_ctx._style.spacing = 2;
+  mu_ctx._style.indent = 2;
+  mu_ctx._style.thumb_size = 6;
+  mu_ctx._style.colors[MU_COLOR_BORDER]      = convert_color_to_mu(INDIGO);
+  mu_ctx._style.colors[MU_COLOR_WINDOWBG]    = convert_color_to_mu(VIOLET);
+  mu_ctx._style.colors[MU_COLOR_TITLEBG]     = convert_color_to_mu(ORANGE);
+  mu_ctx._style.colors[MU_COLOR_PANELBG]     = convert_color_to_mu(BLUE);
+  mu_ctx._style.colors[MU_COLOR_BUTTON]      = convert_color_to_mu(DARK_GREEN);
+  mu_ctx._style.colors[MU_COLOR_BUTTONHOVER] = convert_color_to_mu(GREEN);
+  mu_ctx._style.colors[MU_COLOR_BASE]        = convert_color_to_mu(BLACK);
+  mu_ctx._style.colors[MU_COLOR_BASEHOVER]   = convert_color_to_mu(GREY);
+  mu_ctx._style.colors[MU_COLOR_SCROLLBASE]  = convert_color_to_mu(DARK_RED);
+  mu_ctx._style.colors[MU_COLOR_SCROLLTHUMB] = convert_color_to_mu(RED);
 
   cursor_active = true;
   is_n64_mouse = joypad_get_identifier(joypad_index) == JOYBUS_IDENTIFIER_N64_MOUSE;
