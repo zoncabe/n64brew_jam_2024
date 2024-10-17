@@ -6,6 +6,7 @@
 enum FONT_STYLES 
 {
     STYLE_DEFAULT,
+    STYLE_TITLE,
     STYLE_COUNT
 };
 
@@ -19,11 +20,19 @@ uint8_t ui_register_font(void)
 
     // Create and register font style
     rdpq_fontstyle_t txt_game_fontStyle;
-    txt_game_fontStyle.color = pack_color(BLACK);
+    txt_game_fontStyle.color = pack_color(WHITE);
     rdpq_font_style(
         font, 
         STYLE_DEFAULT, 
         &txt_game_fontStyle
+    );
+
+    rdpq_fontstyle_t txt_title_fontStyle;
+    txt_title_fontStyle.color = pack_color(BLACK);
+    rdpq_font_style(
+        font, 
+        STYLE_TITLE, 
+        &txt_title_fontStyle
     );
 
     return font_id;

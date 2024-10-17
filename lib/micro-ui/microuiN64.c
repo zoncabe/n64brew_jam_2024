@@ -93,6 +93,7 @@ void mu64_init(joypad_port_t joypad_idx, uint8_t font_idx)
   mu_ctx._style.colors[MU_COLOR_BORDER]      = pack_color_to_mu(INDIGO);
   mu_ctx._style.colors[MU_COLOR_WINDOWBG]    = pack_color_to_mu(VIOLET);
   mu_ctx._style.colors[MU_COLOR_TITLEBG]     = pack_color_to_mu(ORANGE);
+  mu_ctx._style.colors[MU_COLOR_TITLETEXT]   = pack_color_to_mu(BLACK);
   mu_ctx._style.colors[MU_COLOR_PANELBG]     = pack_color_to_mu(BLUE);
   mu_ctx._style.colors[MU_COLOR_BUTTON]      = pack_color_to_mu(DARK_GREEN);
   mu_ctx._style.colors[MU_COLOR_BUTTONHOVER] = pack_color_to_mu(GREEN);
@@ -153,12 +154,25 @@ void mu64_end_frame()
   mu_end(&mu_ctx);
 }
 
+// TODO: Idk if this is more or less hacky, Max didn't really give a lot of options for changing the text color
+bool mu64_colors_are_equal(mu_Color c1, mu_Color c2) {
+  return (c1.r == c2.r && c1.g == c2.g && c1.b == c2.b && c1.a == c2.a);
+}
+
+void mu64_update_text_style(mu_Command *cmd, rdpq_textparms_t *txt_param)
+{
+  if (mu64_colors_are_equal(cmd->text.color, pack_color_to_mu(BLACK))) {
+    txt_param->style_id = 1; // STYLE_TITLE
+  } else {
+    txt_param->style_id = 0; // STYLE_DEFAULT
+
+  }
+}
+
 void mu64_draw()
 {
   if(!cursor_active)return;
-  // TODO: find a less hacky way to change styles at runtime outside of this function
   rdpq_textparms_t txt_game_param;
-  txt_game_param.style_id = 0;
   rdpq_textparms_t txt_param = txt_game_param;
   rdpq_blitparms_t tile_param = {.width = TILE_WIDTH};
 
@@ -168,8 +182,10 @@ void mu64_draw()
   mu_Command *cmd = NULL;
   while (mu_next_command(&mu_ctx, &cmd))
   {
+
     switch (cmd->type) {
       case MU_COMMAND_TEXT:
+        mu64_update_text_style(cmd, &txt_param);
         rdpq_sync_pipe();
         rdpq_text_print(&txt_param, font_index, cmd->text.pos.x, cmd->text.pos.y + FONT_SIZE - 1, cmd->text.str);
       break;
