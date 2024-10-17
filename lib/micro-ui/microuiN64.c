@@ -161,6 +161,7 @@ void mu64_draw()
   rdpq_textparms_t txt_param = {};
   rdpq_blitparms_t tile_param = {.width = TILE_WIDTH};
 
+  rdpq_sync_pipe();
   rdpq_set_mode_standard();
 
   mu_Command *cmd = NULL;
@@ -168,11 +169,13 @@ void mu64_draw()
   {
     switch (cmd->type) {
       case MU_COMMAND_TEXT:
+        rdpq_sync_pipe();
         rdpq_text_print(&txt_param, font_index, cmd->text.pos.x, cmd->text.pos.y + FONT_SIZE - 1, cmd->text.str);
       break;
 
       case MU_COMMAND_RECT:
         if(cmd->rect.color.a != 0) {
+          rdpq_sync_pipe();
           rdpq_set_mode_fill(*(color_t*)(void*)&cmd->rect.color);
           rdpq_fill_rectangle(
             cmd->rect.rect.x, cmd->rect.rect.y,
@@ -184,6 +187,7 @@ void mu64_draw()
 
       case MU_COMMAND_ICON:
         if(cmd->icon.id > 0) {
+          rdpq_sync_pipe();
           rdpq_set_mode_standard();
           rdpq_mode_blender(RDPQ_BLENDER_MULTIPLY);
           tile_param.s0 = (cmd->icon.id-1) * TILE_WIDTH;
@@ -193,6 +197,7 @@ void mu64_draw()
 
       case MU_COMMAND_SURFACE:
         if(cmd->surface.surface) {
+          rdpq_sync_pipe();
           rdpq_set_mode_standard();
           rdpq_mode_blender(RDPQ_BLENDER_MULTIPLY);
 
@@ -209,6 +214,7 @@ void mu64_draw()
 
        case MU_COMMAND_SPRITE:
         if(cmd->surface.surface) {
+          rdpq_sync_pipe();
           rdpq_set_mode_standard();
           rdpq_mode_blender(RDPQ_BLENDER_MULTIPLY);
 
@@ -239,6 +245,7 @@ void mu64_draw()
   rdpq_set_scissor(0, 0, display_get_width(), display_get_height());
 
   if(cursor_active) {
+    rdpq_sync_pipe();
     rdpq_set_mode_standard();
     rdpq_mode_blender(RDPQ_BLENDER_MULTIPLY);
 
