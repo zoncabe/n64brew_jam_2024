@@ -112,13 +112,10 @@ void ui_textbox(void)
     mu_Rect textWindow = mu_rect(textPos[0],textPos[1],textPos[2],textPos[3]);
     mu_Rect textBox = mu_rect(textPos[0]-32,textPos[1]-textBoxOffset,textPos[2]*2,textPos[3]+textBoxOffset);
 
-    if (mu_begin_window_ex(&mu_ctx, "", textWindow, (MU_OPT_NOTITLE | MU_OPT_POPUP)))
+    if (mu_begin_window_ex(&mu_ctx, "", textWindow, (MU_OPT_NOTITLE | MU_OPT_NOFRAME | MU_OPT_POPUP)))
     {
         mu_Id id = mu_get_id(&mu_ctx, &text, sizeof(text));
-        mu_textbox_raw(&mu_ctx, text, strlen(text), id, textBox, 0);
-        if (mu_ctx.mouse_pressed == MU_MOUSE_LEFT) {
-            mu_ctx.hover_root->open = 0;
-        }
+        mu_textbox_raw(&mu_ctx, text, strlen(text), id, textBox, MU_OPT_POPUP);
         mu_end_window(&mu_ctx);
     }
 }
