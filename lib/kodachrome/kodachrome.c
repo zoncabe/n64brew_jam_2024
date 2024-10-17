@@ -1,3 +1,8 @@
+/**
+* @copyright 2024 - s4ys
+* @license Unlicense
+*/
+
 #include <stdint.h>
 #include <libdragon.h>
 

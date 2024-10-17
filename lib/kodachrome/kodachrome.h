@@ -1,3 +1,8 @@
+/**
+* @copyright 2024 - s4ys
+* @license Unlicense
+*/
+
 #ifndef KODACHROME_H
 #define KODACHROME_H
 
