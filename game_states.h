@@ -39,7 +39,7 @@ void gameState_setMainMenu(Screen* screen, TimeData* timing, ControllerData* con
 	LightData light = light_create();
 
 	//scenery
-	Scenery room = scenery_create(0, "rom:/room.t3dm");
+	Scenery room = scenery_create(0, "rom:/testLevel.t3dm");
 
 	Scenery n64logo = scenery_create(0, "rom:/n64logo.t3dm");
 
