@@ -3,6 +3,7 @@
 
 #include <libdragon.h>
 #include "../lib/micro-ui/microuiN64.h"
+#include "../util/JsonUtil.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,6 +25,35 @@ enum FONT_STYLES
     STYLE_BRIGHT,
     STYLE_GREEN,
     STYLE_COUNT
+};
+
+struct DialogData{
+    int dialogID;
+    int dialogLines;
+    int textPos[4];
+    std::string text;
+    std::string windowColor;
+    std::string textColor;
+};
+
+class DialogSerializer : public JsonSerializer<DialogData>
+{
+public:
+	DialogSerializer() = default;
+	virtual ~DialogSerializer() = default;
+
+protected:
+	virtual void Serialize(nlohmann::json& parentNode, DialogData& instance, bool isReading) override
+	{
+        JsonUtil::Serialize(parentNode["dialogLines"], instance.dialogLines, isReading);
+        JsonUtil::SerializeString(parentNode["text"], instance.text, isReading);
+        for (int i = 0; i < 2; ++i)
+        {
+            JsonUtil::Serialize(parentNode["textPos"][i], instance.textPos[i], isReading);
+        }
+        JsonUtil::SerializeString(parentNode["windowColor"], instance.windowColor, isReading);
+        JsonUtil::SerializeString(parentNode["textColor"], instance.textColor, isReading);
+	}
 };
 
 // Step 1/5: Make sure you have a small font loaded
@@ -121,43 +151,68 @@ void ui_main_menu(void)
     }
 }
 
+/* Function to parse raw RGBA data, if needed
+static int ui_pack_color_from_string(const std::string& hex)
+{
+    unsigned int color = 0;
+    std::stringstream ss;
+    ss << std::hex << hex.substr(1); // Skip the leading '#'
+    ss >> color;
+    return color;
+}
+*/
+
+int ui_string_to_color(const std::string& colorStr)
+{
+    static std::map<std::string, ColorNames> colorMap = {
+        {"RED", RED}, {"ORANGE", ORANGE}, {"YELLOW", YELLOW}, {"GREEN", GREEN}, {"BLUE", BLUE}, {"INDIGO", INDIGO}, {"VIOLET", VIOLET},
+        {"BLACK", BLACK}, {"WHITE", WHITE}, {"LIGHT_GREY", LIGHT_GREY}, {"GREY", GREY}, {"DARK_GREY", DARK_GREY}, {"TRANSPARENT", TRANSPARENT},
+        {"T_RED", T_RED}, {"T_ORANGE", T_ORANGE}, {"T_YELLOW", T_YELLOW}, {"T_GREEN", T_GREEN}, {"T_BLUE", T_BLUE}, {"T_INDIGO", T_INDIGO}, {"T_VIOLET", T_VIOLET},
+        {"DARK_RED", DARK_RED}, {"DARK_GREEN", DARK_GREEN}, {"N_RED", N_RED}, {"N_YELLOW", N_YELLOW}, {"N_GREEN", GREEN}, {"N_BLUE", BLUE}
+    };
+
+    auto it = colorMap.find(colorStr);
+    if (it != colorMap.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        return WHITE;
+    }
+}
+
 void ui_textbox(void)
 {
+    // Parse JSON.
+    DialogData dialogData = {};
+	static const char* kDialogFilePath = "rom:/dialog_test.json";
+	DialogSerializer serializer;
+    static int printOnce = 0;
+	if (serializer.Load(kDialogFilePath, dialogData) && printOnce == 0)
+	{
+		debugf("\nLoaded Dialog JSON: %d\n", dialogData.dialogID);
+        printOnce = 1;
+	}
 
-    mu_ctx._style.colors[MU_COLOR_BASEHOVER]  = pack_color_to_mu(DARK_GREY);
-    mu_ctx._style.colors[MU_COLOR_WINDOWBG] = pack_color_to_mu(BLACK);
-    mu_ctx._style.colors[MU_COLOR_TEXT]  = pack_color_to_mu(YELLOW);
-    const char *text;
+    // Set up styles.
+    mu_ctx._style.colors[MU_COLOR_BASE] = pack_color_to_mu(ui_string_to_color(dialogData.windowColor));
+    mu_ctx._style.colors[MU_COLOR_TEXT] = pack_color_to_mu(ui_string_to_color(dialogData.textColor));
+
+    // Calculate text window and text box positions.
     const int charWidth = 10;
-    uint8_t dialogID = 0;
-    int dialogLines;
-    int textBoxOffset;
-    int textPos[4];
-    switch(dialogID)
-    {
-        case 0:
-            dialogLines = 5; // parse
-            textBoxOffset = ((dialogLines+1) * charWidth);
-            textPos[2] = ((dialogLines+1) * (charWidth*2));
-            textPos[3] = (dialogLines * (charWidth+1));
-            textPos[0] = 32; // parse
-            textPos[1] = 128; // parse
-            text = "\n\
-                    I'm Spaghet, boo!\n\
-                    Spaghet! Spooked ya!\n\
-                    Spaghet! Spooked ya!\n\
-                    Spaghet! Spooked ya!\n\
-                    Spaghet! Spooked ya!"; // parse, format with leading line and line breaks
-            break;
-    }
+    int textBoxOffset = ((dialogData.dialogLines+1) * charWidth);
+    dialogData.textPos[2] = ((dialogData.dialogLines+1) * (charWidth * 2));
+    dialogData.textPos[3] = (dialogData.dialogLines * (charWidth + 1));
 
-    mu_Rect textWindow = mu_rect(textPos[0],textPos[1],textPos[2],textPos[3]);
-    mu_Rect textBox = mu_rect(textPos[0]-32,textPos[1]-textBoxOffset,textPos[2]*2,textPos[3]+textBoxOffset);
+    mu_Rect textWindow = mu_rect(dialogData.textPos[0], dialogData.textPos[1], dialogData.textPos[2], dialogData.textPos[3]);
+    mu_Rect textBox = mu_rect(dialogData.textPos[0]+charWidth, dialogData.textPos[1] - textBoxOffset, dialogData.textPos[2] * 2, dialogData.textPos[3] + textBoxOffset);
 
+    // Draw the text box window.
     if (mu_begin_window_ex(&mu_ctx, "", textWindow, (MU_OPT_NOTITLE | MU_OPT_NOFRAME | MU_OPT_POPUP)))
     {
-        mu_Id id = mu_get_id(&mu_ctx, &text, sizeof(text));
-        mu_textbox_raw(&mu_ctx, const_cast<char*>(text), strlen(text), id, textBox, MU_OPT_POPUP);
+        mu_Id id = mu_get_id(&mu_ctx, &dialogData.text, sizeof(dialogData.text));
+        mu_textbox_raw(&mu_ctx, const_cast<char*>(dialogData.text.c_str()), dialogData.text.length(), id, textBox, MU_OPT_POPUP);
         mu_end_window(&mu_ctx);
     }
 }

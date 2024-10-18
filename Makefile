@@ -43,14 +43,27 @@ filesystem/%.t3dm: assets/%.glb
 	$(T3D_GLTF_TO_3D) "$<" $@ --base-scale=1
 	$(N64_BINDIR)/mkasset -c 2 -o filesystem $@
 
+# Wildcard for collision files
 collision_files = $(wildcard assets/levels/*.json)
-collision_assets = $(addprefix filesystem/,$(notdir $(collision_files:%.json=%.json)))
-filesystem/%.json: $(collision_files)
+collision_assets = $(addprefix filesystem/,$(notdir $(collision_files)))
+
+# Wildcard for dialog files
+dialog_files = $(wildcard assets/dialogs/*.json)
+dialog_assets = $(addprefix filesystem/,$(notdir $(dialog_files)))
+
+# Rule to copy collision files
+filesystem/%.json: assets/levels/%.json
 	@mkdir -p $(dir $@)
 	@echo "    [Collision JSON] $@"
 	@cp $< $@
 
-$(BUILD_DIR)/$(ROM_NAME).dfs: $(assets_conv) $(collision_assets)
+# Rule to copy dialog files
+filesystem/%.json: assets/dialogs/%.json
+	@mkdir -p $(dir $@)
+	@echo "    [Dialog JSON] $@"
+	@cp $< $@
+
+$(BUILD_DIR)/$(ROM_NAME).dfs: $(assets_conv) $(collision_assets) $(dialog_assets)
 $(BUILD_DIR)/$(ROM_NAME).elf: $(src:%.c=$(BUILD_DIR)/%.o) $(src:%.cpp=$(BUILD_DIR)/%.o)
 
 $(ROM_NAME).z64: N64_ROM_TITLE="N64BREW2024GAME"
