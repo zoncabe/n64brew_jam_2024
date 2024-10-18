@@ -7,6 +7,10 @@
 #include <stdint.h>
 #include <libdragon.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*~~s4ys~~*/
 mu_Color pack_color_to_mu(int colIdx);
 void mu64_set_font_idx(int idx);
@@ -26,5 +30,9 @@ bool mu64_is_active();
 void mu64_set_mouse_speed(float speed);
 
 extern mu_Context mu_ctx;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

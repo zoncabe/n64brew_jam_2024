@@ -1,5 +1,12 @@
+#ifndef UI_H
+#define UI_H
+
 #include <libdragon.h>
 #include "../lib/micro-ui/microuiN64.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define FONT_ID_GAME 2
 enum FONT_IDS 
@@ -180,3 +187,9 @@ void ui_draw(void)
     ui_update();
     mu64_draw();
 }
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // UI_H

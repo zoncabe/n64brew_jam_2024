@@ -10,6 +10,10 @@
 #include <stdint.h>
 #include <libdragon.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 enum ColorNames
 {
     // Standard ROYGBIV
@@ -55,6 +59,8 @@ extern const uint8_t COLORS[COLOR_COUNT][4];
 const color_t pack_color_32(int color_label);
 const color_t pack_color_16(int color_label);
 
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif // KODACHROME_H
