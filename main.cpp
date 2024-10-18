@@ -28,9 +28,12 @@
 
 #include "util/JsonUtil.h"
 
-#define TEST_JSON_LOADING 1
+#include "physics/PhysicalAssemblySerializer.h"
 
-#ifdef TEST_JSON_LOADING
+#define TEST_SAVE_FILE_LOADING 1
+#define TEST_PHYSICAL_ASSEMBLY_LOADING 1
+
+#ifdef TEST_SAVE_FILE_LOADING
 struct SaveGameData
 {
 	std::string playerName;
@@ -70,13 +73,27 @@ int main()
 	TimeData timing;
 	time_init(&timing);
 
-#ifdef TEST_JSON_LOADING
+#ifdef TEST_SAVE_FILE_LOADING
 	SaveGameData saveData = {};
 	static const char* kSaveFilePath = "rom:/saveGameDataTest.json";
 	SaveGameSerializer serializer;
 	if (serializer.Load(kSaveFilePath, saveData))
 	{
 		debugf("\nLoaded HighScores JSON successfully:\n%s\t%d\n", saveData.playerName.c_str(), saveData.highScore);
+	}
+#endif
+
+#ifdef TEST_PHYSICAL_ASSEMBLY_LOADING
+	
+	PhysicalAssemblyCreateInfo createInfo = {};
+	static const char* kLevelFilePath = "rom:/testLevel.json";
+	PhysicalAssemblySerializer assemblySerializer;
+	if (assemblySerializer.Load(kLevelFilePath, createInfo))
+	{
+		int numBodies = (int)createInfo.bodies.size();
+		int numConstraints = (int)createInfo.constraints.size();
+		int numShapes = (int)createInfo.shapes.size();
+		debugf("\nLoaded level successfully:\nNumBodies:\t%d\nNumConstraints:\t%d\nNumShapes:\t%d\n", numBodies, numConstraints, numShapes);
 	}
 #endif
 
