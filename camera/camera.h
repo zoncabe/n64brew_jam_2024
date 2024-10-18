@@ -93,12 +93,13 @@ void camera_set(Camera *camera, Screen* screen);
 Camera camera_create()
 {
     Camera camera = {
+		.position = {0.0f, 0.0f, 0.0f},
+		.offset_height = 180,
         .distance_from_barycenter = 250,
+		.angle_around_barycenter = 0,
+		.pitch = 15,
         .target_distance = 250,
-        .angle_around_barycenter = 0,
-        .pitch = 15,
         .offset_angle = 45,
-        .offset_height = 180,
 		.field_of_view = 65,
 		.near_clipping = 100,
 		.far_clipping = 10000,
@@ -176,8 +177,8 @@ void camera_getOrbitalPosition(Camera *camera, Vector3 barycenter, float frame_t
 		camera->position.z = barycenter.z + camera->offset_height + camera->vertical_barycenter_distance;
 	}
 
-	camera->target.x = barycenter.x - camera-> horizontal_target_distance * sinf(rad(camera->angle_around_barycenter + 180));
-	camera->target.y = barycenter.y - camera-> horizontal_target_distance * cosf(rad(camera->angle_around_barycenter + 180));
+	camera->target.x = barycenter.x - camera-> horizontal_target_distance * sinf(rad(camera->angle_around_barycenter + 180.0f));
+	camera->target.y = barycenter.y - camera-> horizontal_target_distance * cosf(rad(camera->angle_around_barycenter + 180.0f));
 	camera->target.z = barycenter.z + camera->offset_height + camera->vertical_target_distance;
 }
 
@@ -191,11 +192,14 @@ void camera_set(Camera *camera, Screen* screen)
 		camera->far_clipping
     );
 
+	T3DVec3 eye = {{camera->position.x, camera->position.y, camera->position.z}};
+	T3DVec3 target = {{camera->target.x, camera->target.y, camera->target.z}};
+	T3DVec3 up = {{0.0f, 0.0f, 1.0f}};
     t3d_viewport_look_at(
         &screen->gameplay_viewport, 
-        &(T3DVec3){{camera->position.x, camera->position.y, camera->position.z}}, 
-        &(T3DVec3){{camera->target.x, camera->target.y, camera->target.z}}, 
-        &(T3DVec3){{0, 0, 1}}
+        &eye, 
+        &target, 
+        &up
     );
 }
 

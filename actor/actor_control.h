@@ -44,7 +44,7 @@ void actorControl_moveWithStick(Actor *actor, ControllerData *control, float cam
 
     if (fabs(control->input.stick_x) >= deadzone || fabs(control->input.stick_y) >= deadzone) {
 
-        Vector2 stick = {control->input.stick_x, control->input.stick_y};
+        Vector2 stick = {(float)control->input.stick_x, (float)control->input.stick_y};
         
         stick_magnitude = vector2_magnitude(&stick);
         actor->horizontal_target_speed = stick_magnitude * 6;

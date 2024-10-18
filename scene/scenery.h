@@ -32,9 +32,9 @@ Scenery scenery_create(uint32_t id, const char *model_path)
 {
     Scenery scenery = {
         .id = id,
+        .dl = NULL,
+        .modelMat = (T3DMat4FP*)malloc_uncached(sizeof(T3DMat4FP)), // needed for t3d
         .model = t3d_model_load(model_path),
-        .modelMat = malloc_uncached(sizeof(T3DMat4FP)), // needed for t3d
-
         .scale = {1.0f, 1.0f, 1.0f},
         .position = {0.0f, 0.0f, 0.0f},
         .rotation = {0.0f, 0.0f, 0.0f},

@@ -47,7 +47,7 @@ void ui_register_fonts(void)
     rdpq_fontstyle_t txt_green_fontStyle;
     txt_green_fontStyle.color = pack_color_32(GREEN);
 
-    for (int i = 1; i < ID_COUNT; i++)
+    for (int i = 2; i < ID_COUNT; i++)
     {
         rdpq_text_register_font(i, font[i]);
         rdpq_font_style(
@@ -127,7 +127,7 @@ void ui_textbox(void)
     mu_ctx._style.colors[MU_COLOR_BASEHOVER]  = pack_color_to_mu(DARK_GREY);
     mu_ctx._style.colors[MU_COLOR_WINDOWBG] = pack_color_to_mu(BLACK);
     mu_ctx._style.colors[MU_COLOR_TEXT]  = pack_color_to_mu(YELLOW);
-    char *text;
+    const char *text;
     const int charWidth = 10;
     uint8_t dialogID = 0;
     int dialogLines;
@@ -157,7 +157,7 @@ void ui_textbox(void)
     if (mu_begin_window_ex(&mu_ctx, "", textWindow, (MU_OPT_NOTITLE | MU_OPT_NOFRAME | MU_OPT_POPUP)))
     {
         mu_Id id = mu_get_id(&mu_ctx, &text, sizeof(text));
-        mu_textbox_raw(&mu_ctx, text, strlen(text), id, textBox, MU_OPT_POPUP);
+        mu_textbox_raw(&mu_ctx, const_cast<char*>(text), strlen(text), id, textBox, MU_OPT_POPUP);
         mu_end_window(&mu_ctx);
     }
 }

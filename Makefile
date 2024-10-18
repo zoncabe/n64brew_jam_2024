@@ -1,14 +1,15 @@
-BUILD_DIR = build
+ROM_NAME=game
+BUILD_DIR=build
 
 include $(N64_INST)/include/n64.mk
 include $(T3D_INST)/t3d.mk
 
 N64_CFLAGS += -std=gnu2x
+N64_INCLUDEDIR += -I./lib -I./lib/glm -I./lib/kodachrome -I./lib/micro-ui -I/opt/libdragon/include/bullet
+N64_LIBS += -lkodachrome \
+			-lmicro-ui
 
-src = main.c \
-	lib/kodachrome/kodachrome.c \
-	lib/micro-ui/microui.c \
-	lib/micro-ui/microuiN64.c
+src = main.cpp $(wildcard physics/*.cpp util/*.cpp lib/kodachrome/*.c lib/micro-ui/*.c)
 
 assets_png = $(wildcard assets/*.png)
 assets_gltf = $(wildcard assets/*.glb)
@@ -17,7 +18,7 @@ assets_conv = $(addprefix filesystem/,$(notdir $(assets_png:%.png=%.sprite))) \
               $(addprefix filesystem/,$(notdir $(assets_ttf:%.ttf=%.font64))) \
               $(addprefix filesystem/,$(notdir $(assets_gltf:%.glb=%.t3dm)))
 
-all: game.z64
+all: $(ROM_NAME).z64
 
 # Create build directories
 $(BUILD_DIR):
@@ -42,29 +43,18 @@ filesystem/%.t3dm: assets/%.glb
 	$(T3D_GLTF_TO_3D) "$<" $@ --base-scale=1
 	$(N64_BINDIR)/mkasset -c 2 -o filesystem $@
 
-$(BUILD_DIR)/game.dfs: $(assets_conv)
-
-# Build object files for source files in lib/
-$(BUILD_DIR)/lib/%.o: lib/%.c | $(BUILD_DIR)
+collision_files = $(wildcard assets/levels/*.json)
+collision_assets = $(addprefix filesystem/,$(notdir $(collision_files:%.json=%.json)))
+filesystem/%.json: $(collision_files)
 	@mkdir -p $(dir $@)
-	@echo "    [CC] $<"
-	$(N64_CC) $(N64_CFLAGS) -c $< -o $@
+	@echo "    [Collision JSON] $@"
+	@cp $< $@
 
-# Build object files for main.c
-$(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
-	@mkdir -p $(dir $@)
-	@echo "    [CC] $<"
-	$(N64_CC) $(N64_CFLAGS) -c $< -o $@
+$(BUILD_DIR)/$(ROM_NAME).dfs: $(assets_conv) $(collision_assets)
+$(BUILD_DIR)/$(ROM_NAME).elf: $(src:%.c=$(BUILD_DIR)/%.o) $(src:%.cpp=$(BUILD_DIR)/%.o)
 
-# Link the ELF file
-$(BUILD_DIR)/game.elf: $(src:%.c=$(BUILD_DIR)/%.o)
-
-# Generate the ROM file
-game.z64: N64_ROM_TITLE="Tiny3D - Model"
-game.z64: $(BUILD_DIR)/game.dfs
-
-# Include generated dependencies
--include $(wildcard $(BUILD_DIR)/*.d) $(wildcard $(BUILD_DIR)/lib/*.d)
+$(ROM_NAME).z64: N64_ROM_TITLE="N64BREW2024GAME"
+$(ROM_NAME).z64: $(BUILD_DIR)/$(ROM_NAME).dfs
 
 clean:
 	rm -rf $(BUILD_DIR) *.z64

@@ -26,7 +26,7 @@ float max3(float a, float b, float c);
 bool sameSign(float a, float b);
 bool approxEqual(float a, float b);
 
-bool isfinite(float x);
+bool isFinite(float x);
 
 
 /* quick inverse square root */
@@ -118,7 +118,7 @@ inline bool approxEqual(float a, float b)
 }
 
 
-inline bool isfinite(float x)
+inline bool isFinite(float x)
 {
     return (x == x) && (x != INFINITY) && (x != -INFINITY);
 }
