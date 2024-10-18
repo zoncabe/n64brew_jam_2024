@@ -1,3 +1,4 @@
+ROM_NAME=game
 BUILD_DIR=build
 
 include $(N64_INST)/include/n64.mk
@@ -13,7 +14,7 @@ assets_conv = $(addprefix filesystem/,$(notdir $(assets_png:%.png=%.sprite))) \
 			  $(addprefix filesystem/,$(notdir $(assets_ttf:%.ttf=%.font64))) \
 			  $(addprefix filesystem/,$(notdir $(assets_gltf:%.glb=%.t3dm)))
 
-all: game.z64
+all: $(ROM_NAME).z64
 
 filesystem/%.sprite: assets/%.png
 	@mkdir -p $(dir $@)
@@ -34,11 +35,11 @@ filesystem/%.json: $(collision_files)
 	@echo "    [Collision JSON] $@"
 	@cp "$<" $(dir $@)
 
-$(BUILD_DIR)/game.dfs: $(assets_conv) $(collision_assets)
-$(BUILD_DIR)/game.elf: $(src:%.c=$(BUILD_DIR)/%.o)
+$(BUILD_DIR)/$(ROM_NAME).dfs: $(assets_conv) $(collision_assets)
+$(BUILD_DIR)/$(ROM_NAME).elf: $(src:%.c=$(BUILD_DIR)/%.o)
 
-game.z64: N64_ROM_TITLE="Tiny3D - Model"
-game.z64: $(BUILD_DIR)/game.dfs
+$(ROM_NAME).z64: N64_ROM_TITLE="N64BREW2024GAME"
+$(ROM_NAME).z64: $(BUILD_DIR)/$(ROM_NAME).dfs
 
 clean:
 	rm -rf $(BUILD_DIR) *.z64
