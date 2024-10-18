@@ -58,10 +58,10 @@ void mu64_init(joypad_port_t joypad_idx)
   mu_ctx._style.spacing = 1;
   mu_ctx._style.indent = 1;
   mu_ctx._style.thumb_size = 3;
-  mu_ctx._style.colors[MU_COLOR_BORDER]      = pack_color_to_mu(BLACK);
-  mu_ctx._style.colors[MU_COLOR_TITLEBG]     = pack_color_to_mu(N_YELLOW);
+  mu_ctx._style.colors[MU_COLOR_BORDER]      = pack_color_to_mu(TRANSPARENT);
+  mu_ctx._style.colors[MU_COLOR_TITLEBG]     = pack_color_to_mu(T_YELLOW);
   mu_ctx._style.colors[MU_COLOR_TITLETEXT]   = pack_color_to_mu(BLACK);
-  mu_ctx._style.colors[MU_COLOR_BUTTON]      = pack_color_to_mu(DARK_GREEN);
+  mu_ctx._style.colors[MU_COLOR_BUTTON]      = pack_color_to_mu(T_GREEN);
   mu_ctx._style.colors[MU_COLOR_BUTTONHOVER] = pack_color_to_mu(GREEN);
   mu_ctx._style.colors[MU_COLOR_BUTTONFOCUS] = pack_color_to_mu(N_GREEN);
   mu_ctx._style.colors[MU_COLOR_BASE]        = pack_color_to_mu(BLACK);
@@ -198,13 +198,19 @@ void mu64_draw()
       case MU_COMMAND_TEXT:
         mu64_update_text_style(cmd, &txt_param);
         rdpq_sync_pipe();
+        rdpq_set_mode_standard();
+        rdpq_mode_combiner(RDPQ_COMBINER_FLAT);
+        rdpq_mode_blender(RDPQ_BLENDER_MULTIPLY);
         rdpq_text_print(&txt_param, font_index, cmd->text.pos.x, cmd->text.pos.y + FONT_SIZE - 1, cmd->text.str);
       break;
 
       case MU_COMMAND_RECT:
         if(cmd->rect.color.a != 0) {
           rdpq_sync_pipe();
-          rdpq_set_mode_fill(*(color_t*)(void*)&cmd->rect.color);
+          rdpq_set_mode_standard();
+          rdpq_mode_combiner(RDPQ_COMBINER_FLAT);
+          rdpq_mode_blender(RDPQ_BLENDER_MULTIPLY);
+          rdpq_set_prim_color(*(color_t*)(void*)&cmd->rect.color);
           rdpq_fill_rectangle(
             cmd->rect.rect.x, cmd->rect.rect.y,
             cmd->rect.rect.x + cmd->rect.rect.w,

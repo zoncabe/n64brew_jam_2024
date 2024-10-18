@@ -29,13 +29,13 @@ void ui_register_fonts(void)
 
     // Create and register font styles
     rdpq_fontstyle_t txt_game_fontStyle;
-    txt_game_fontStyle.color = pack_color_32(LIGHT_GREY);
+    txt_game_fontStyle.color = pack_color_32(WHITE);
 
     rdpq_fontstyle_t txt_title_fontStyle;
     txt_title_fontStyle.color = pack_color_32(BLACK);
 
     rdpq_fontstyle_t txt_bright_fontStyle;
-    txt_bright_fontStyle.color = pack_color_32(YELLOW);
+    txt_bright_fontStyle.color = pack_color_32(T_YELLOW);
 
     rdpq_fontstyle_t txt_green_fontStyle;
     txt_green_fontStyle.color = pack_color_32(GREEN);
@@ -87,8 +87,8 @@ void ui_poll (void)
 // Basic window, you can add inputs to modify variables
 void ui_main_menu(void)
 {
-    mu_ctx._style.colors[MU_COLOR_PANELBG]  = pack_color_to_mu(N_BLUE);
-    mu_ctx._style.colors[MU_COLOR_WINDOWBG] = pack_color_to_mu(N_BLUE);
+    mu_ctx._style.colors[MU_COLOR_PANELBG]  = pack_color_to_mu(T_BLUE);
+    mu_ctx._style.colors[MU_COLOR_WINDOWBG] = pack_color_to_mu(T_BLUE);
 
     if (mu_begin_window_ex(&mu_ctx, "N64BREW GAME JAM 2024", mu_rect(32, 32, 194, 90), (MU_OPT_NOINTERACT | MU_OPT_NOCLOSE) ))
     {
