@@ -6,7 +6,7 @@ include $(T3D_INST)/t3d.mk
 
 N64_CFLAGS += -std=gnu2x
 
-src = main.c
+src = main.cpp
 
 assets_png = $(wildcard assets/*.png)
 assets_gltf = $(wildcard assets/*.glb)
@@ -36,7 +36,7 @@ filesystem/%.json: $(collision_files)
 	@cp "$<" $(dir $@)
 
 $(BUILD_DIR)/$(ROM_NAME).dfs: $(assets_conv) $(collision_assets)
-$(BUILD_DIR)/$(ROM_NAME).elf: $(src:%.c=$(BUILD_DIR)/%.o)
+$(BUILD_DIR)/$(ROM_NAME).elf: $(src:%.c=$(BUILD_DIR)/%.o) $(src:%.cpp=$(BUILD_DIR)/%.o)
 
 $(ROM_NAME).z64: N64_ROM_TITLE="N64BREW2024GAME"
 $(ROM_NAME).z64: $(BUILD_DIR)/$(ROM_NAME).dfs
