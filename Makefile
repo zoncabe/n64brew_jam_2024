@@ -5,8 +5,9 @@ include $(N64_INST)/include/n64.mk
 include $(T3D_INST)/t3d.mk
 
 N64_CFLAGS += -std=gnu2x
+N64_INCLUDEDIR += -I./lib -I./lib/glm
 
-src = main.cpp
+src = main.cpp util/JsonUtil.cpp
 
 assets_png = $(wildcard assets/*.png)
 assets_gltf = $(wildcard assets/*.glb)

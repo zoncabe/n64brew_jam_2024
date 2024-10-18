@@ -26,6 +26,32 @@
 
 #include "game_states.h"
 
+#include "util/JsonUtil.h"
+
+#define TEST_JSON_LOADING 1
+
+#ifdef TEST_JSON_LOADING
+struct SaveGameData
+{
+	std::string playerName;
+	int highScore;
+};
+
+class SaveGameSerializer : public JsonSerializer<SaveGameData>
+{
+public:
+	SaveGameSerializer() = default;
+	virtual ~SaveGameSerializer() = default;
+
+protected:
+	virtual void Serialize(nlohmann::json& parentNode, SaveGameData& instance, bool isReading) override
+	{
+		JsonUtil::SerializeString(parentNode["playerName"], instance.playerName, isReading);
+		JsonUtil::Serialize(parentNode["highScore"], instance.highScore, isReading);
+	}
+};
+#endif
+
 int main()
 {
 	debug_init_isviewer();
@@ -43,6 +69,16 @@ int main()
 
 	TimeData timing;
 	time_init(&timing);
+
+#ifdef TEST_JSON_LOADING
+	SaveGameData saveData = {};
+	static const char* kSaveFilePath = "rom:/saveGameDataTest.json";
+	SaveGameSerializer serializer;
+	if (serializer.Load(kSaveFilePath, saveData))
+	{
+		debugf("\nLoaded HighScores JSON successfully:\n%s\t%d\n", saveData.playerName.c_str(), saveData.highScore);
+	}
+#endif
 
 	uint8_t game_state = GAMEPLAY;
 	game_setState(game_state, &screen, &timing, &control);
