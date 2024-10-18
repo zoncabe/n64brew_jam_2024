@@ -34,7 +34,7 @@ collision_assets = $(addprefix filesystem/,$(notdir $(collision_files:%.json=%.j
 filesystem/%.json: $(collision_files)
 	@mkdir -p $(dir $@)
 	@echo "    [Collision JSON] $@"
-	@cp "$<" $(dir $@)
+	@cp $< $@
 
 $(BUILD_DIR)/$(ROM_NAME).dfs: $(assets_conv) $(collision_assets)
 $(BUILD_DIR)/$(ROM_NAME).elf: $(src:%.c=$(BUILD_DIR)/%.o) $(src:%.cpp=$(BUILD_DIR)/%.o)
