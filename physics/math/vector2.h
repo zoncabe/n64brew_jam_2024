@@ -124,7 +124,7 @@ bool vector2_isUnit(const Vector2* vector)
 
 bool vector2_isFinite(const Vector2* vector)
 {
-    return isfinite(vector->x) && isfinite(vector->y);
+    return isFinite(vector->x) && isFinite(vector->y);
 }
 
 

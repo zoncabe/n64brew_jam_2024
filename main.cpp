@@ -1,5 +1,4 @@
 #include <libdragon.h>
-
 #include <t3d/t3d.h>
 #include <t3d/t3dmath.h>
 #include <t3d/t3dmodel.h>
@@ -10,8 +9,6 @@
 #include "screen/screen.h"
 #include "control/controls.h"
 #include "time/time.h"
-
-/*
 
 #include "physics/physics.h"
 
@@ -28,7 +25,6 @@
 #include "scene/scenery.h"
 
 #include "game_states.h"
-*/
 
 int main()
 {
@@ -42,20 +38,14 @@ int main()
 	Screen screen;
 	screen_init(&screen);
 
-	
-
 	ControllerData control;
 	joypad_init();
 
 	TimeData timing;
 	time_init(&timing);
 
-	/*
-
 	uint8_t game_state = GAMEPLAY;
 	game_setState(game_state, &screen, &timing, &control);
-
-	*/
 
 	return 0;  
 }

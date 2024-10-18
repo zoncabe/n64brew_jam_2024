@@ -91,25 +91,28 @@ void actor_delete(Actor *actor);
 Actor actor_create(uint32_t id, const char *model_path)
 {
     Actor actor = {
-
         .id = id,
+		.dl = {},
+		.modelMat = (T3DMat4FP*)malloc_uncached(sizeof(T3DMat4FP)),
 		.model = t3d_model_load(model_path),
-        .modelMat = malloc_uncached(sizeof(T3DMat4FP)),
-
         .scale = {1.0f, 1.0f, 1.0f},
-        
-		.state = 1,
-		.previous_state = 1,
-		.locomotion_state = 1,
-
+		.armature = {},
 		.body = {
+			.acceleration = {0.0f, 0.0f, 0.0f},
+			.velocity = {0.0f, 0.0f, 0.0f},
             .position = {0.0f, 0.0f, 0.0f},
-            .velocity = {0.0f, 0.0f, 0.0f},
             .rotation = {0.0f, 0.0f, 0.0f},
+			.previous_position = {0.0f, 0.0f, 0.0f},
         },
-        
+        .target_yaw = 0.0f,
+		.horizontal_target_speed = 0.0f,
+		.target_velocity = {0.0f, 0.0f, 0.0f},
+		.horizontal_speed = 0.0f,
+		.grounded = false,
 		.grounding_height = 0.0f,
-        
+		.locomotion_state = 1,
+		.previous_state = 1,
+		.state = 1,		
 		.settings = {
 			.idle_acceleration_rate = 9,
 			.walk_acceleration_rate = 4,

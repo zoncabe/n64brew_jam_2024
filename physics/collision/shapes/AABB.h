@@ -238,11 +238,11 @@ void aabb_contactAABBsetData(ContactData* contact, const AABB* a, const AABB* b)
 
     // Find the axis of least penetration
     if (overlapX < overlapY && overlapX < overlapZ) {
-        contact->normal = (Vector3){a->maxCoordinates.x < b->maxCoordinates.x ? -1 : 1, 0, 0};
+        contact->normal = (Vector3){a->maxCoordinates.x < b->maxCoordinates.x ? -1.0f : 1.0f, 0.0f, 0.0f};
     } else if (overlapY < overlapX && overlapY < overlapZ) {
-        contact->normal = (Vector3){0, a->maxCoordinates.y < b->maxCoordinates.y ? -1 : 1, 0};
+        contact->normal = (Vector3){0, a->maxCoordinates.y < b->maxCoordinates.y ? -1.0f : 1.0f, 0.0f};
     } else {
-        contact->normal = (Vector3){0, 0, a->maxCoordinates.z < b->maxCoordinates.z ? -1 : 1};
+        contact->normal = (Vector3){0, 0, a->maxCoordinates.z < b->maxCoordinates.z ? -1.0f : 1.0f};
     }
 
     // Calculate the contact point
