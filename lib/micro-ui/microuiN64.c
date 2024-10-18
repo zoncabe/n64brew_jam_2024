@@ -12,7 +12,7 @@
 mu_Context mu_ctx;
 
 static sprite_t *sprite = NULL;
-static uint8_t font_index = 0;
+uint8_t font_index = 2;
 static joypad_port_t joypad_index = 0;
 
 static float mouse_pos_raw[2] = {40,40};
@@ -42,10 +42,10 @@ void mu64_set_mouse_speed(float speed)
   cursor_speed = speed;
 }
 
-void mu64_init(joypad_port_t joypad_idx, uint8_t font_idx)
+void mu64_init(joypad_port_t joypad_idx)
 {
   joypad_index = joypad_idx;
-  font_index = font_idx;
+
   if(!sprite) {
     sprite = sprite_load("rom:/mui.sprite");
   }
@@ -123,7 +123,8 @@ void mu64_end_frame()
 
 /*~~s4ys~~*/
 // TODO: Idk if this is more or less hacky, Max didn't really give a lot of options for changing the text color
-mu_Color pack_color_to_mu(int colIdx) {
+mu_Color pack_color_to_mu(int colIdx)
+{
   mu_Color dst;
   dst.r = COLORS[colIdx][0];
   dst.g = COLORS[colIdx][1];
@@ -132,7 +133,8 @@ mu_Color pack_color_to_mu(int colIdx) {
   return dst;
 }
 
-void mu64_init_style_map(ColorStyleMap *style_map) {
+void mu64_init_style_map(ColorStyleMap *style_map)
+{
   style_map[0].color = pack_color_to_mu(WHITE);
   style_map[0].style_id = 0;   // STYLE_DEFAULT
 
@@ -146,16 +148,20 @@ void mu64_init_style_map(ColorStyleMap *style_map) {
   style_map[3].style_id = 3;   // STYLE_GREEN
 }
 
-bool mu64_colors_are_equal(mu_Color c1, mu_Color c2) {
+bool mu64_colors_are_equal(mu_Color c1, mu_Color c2)
+{
   return (c1.r == c2.r && c1.g == c2.g && c1.b == c2.b && c1.a == c2.a);
 }
 
-int mu64_get_style_id(mu_Color color) {
+int mu64_get_style_id(mu_Color color)
+{
   ColorStyleMap style_map[4]; // Adjust size if adding more styles
   mu64_init_style_map(style_map);
 
-  for (size_t i = 0; i < sizeof(style_map) / sizeof(style_map[0]); ++i) {
-    if (mu64_colors_are_equal(color, style_map[i].color)) {
+  for (size_t i = 0; i < sizeof(style_map) / sizeof(style_map[0]); ++i)
+  {
+    if (mu64_colors_are_equal(color, style_map[i].color))
+    {
       return style_map[i].style_id;
     }
   }
@@ -163,8 +169,14 @@ int mu64_get_style_id(mu_Color color) {
   return 0; // Default to STYLE_DEFAULT
 }
 
-void mu64_update_text_style(mu_Command *cmd, rdpq_textparms_t *txt_param) {
+void mu64_update_text_style(mu_Command *cmd, rdpq_textparms_t *txt_param)
+{
   txt_param->style_id = mu64_get_style_id(cmd->text.color);
+}
+
+void mu64_set_font_idx(int idx)
+{
+  font_index = idx;
 }
 /*~~s4ys~~*/
 

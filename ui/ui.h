@@ -2,7 +2,14 @@
 #include "../lib/micro-ui/microuiN64.h"
 
 #define FONT_ID_GAME 2
-
+enum FONT_IDS 
+{
+    ID_RESERVED,
+    ID_DEBUG,
+    ID_DEFAULT,
+    ID_TITLE,
+    ID_COUNT
+};
 enum FONT_STYLES 
 {
     STYLE_DEFAULT,
@@ -13,54 +20,62 @@ enum FONT_STYLES
 };
 
 // Step 1/5: Make sure you have a small font loaded
-uint8_t ui_register_font(void)
+void ui_register_fonts(void)
 {
     // Load font64 and register to font index 2, 0 reserved by the SDK, 1 should be reserved debug output
-    rdpq_font_t *font = rdpq_font_load("rom:/TitanOne-Regular.font64");
-    static uint8_t font_id = FONT_ID_GAME;
-    rdpq_text_register_font(font_id, font);
+    rdpq_font_t *font[ID_COUNT];
+    font[ID_DEFAULT] = rdpq_font_load("rom:/TitanOne-Regular.font64");
+    font[ID_TITLE] = rdpq_font_load("rom:/chunkysans.font64");
 
     // Create and register font styles
     rdpq_fontstyle_t txt_game_fontStyle;
-    txt_game_fontStyle.color = pack_color_32(WHITE);
-    rdpq_font_style(
-        font, 
-        STYLE_DEFAULT, 
-        &txt_game_fontStyle
-    );
+    txt_game_fontStyle.color = pack_color_32(LIGHT_GREY);
 
     rdpq_fontstyle_t txt_title_fontStyle;
     txt_title_fontStyle.color = pack_color_32(BLACK);
-    rdpq_font_style(
-        font, 
-        STYLE_TITLE, 
-        &txt_title_fontStyle
-    );
 
     rdpq_fontstyle_t txt_bright_fontStyle;
     txt_bright_fontStyle.color = pack_color_32(YELLOW);
-    rdpq_font_style(
-        font, 
-        STYLE_BRIGHT, 
-        &txt_bright_fontStyle
-    );
 
     rdpq_fontstyle_t txt_green_fontStyle;
     txt_green_fontStyle.color = pack_color_32(GREEN);
-    rdpq_font_style(
-        font, 
-        STYLE_GREEN, 
-        &txt_green_fontStyle
-    );
 
-    return font_id;
+    for (int i = 1; i < ID_COUNT; i++)
+    {
+        rdpq_text_register_font(i, font[i]);
+        rdpq_font_style(
+            font[i], 
+            STYLE_DEFAULT, 
+            &txt_game_fontStyle
+        );
+
+        rdpq_font_style(
+            font[i], 
+            STYLE_TITLE, 
+            &txt_title_fontStyle
+        );
+
+        rdpq_font_style(
+            font[i], 
+            STYLE_BRIGHT, 
+            &txt_bright_fontStyle
+        );
+
+        rdpq_font_style(
+            font[i], 
+            STYLE_GREEN, 
+            &txt_green_fontStyle
+        );
+    }
+
 }
 
 // Step 2/5: init UI libary, pass in the controller (joystick or N64-mouse) and font-id
 // (Note: take a look inside this function for styling and controls.)
 void ui_init(void)
 {
-    mu64_init(JOYPAD_PORT_1, ui_register_font());
+    ui_register_fonts();
+    mu64_init(JOYPAD_PORT_1);
 }
 
 // Step 3/5: call this BEFORE your game logic starts each frame
@@ -74,18 +89,17 @@ void ui_main_menu(void)
 {
     mu_ctx._style.colors[MU_COLOR_PANELBG]  = pack_color_to_mu(N_BLUE);
     mu_ctx._style.colors[MU_COLOR_WINDOWBG] = pack_color_to_mu(N_BLUE);
-    
 
-    if (mu_begin_window_ex(&mu_ctx, "       N64BREW GAME JAM 2024", mu_rect(32, 32, 160, 80), (MU_OPT_NOINTERACT | MU_OPT_NOCLOSE) ))
+    if (mu_begin_window_ex(&mu_ctx, "N64BREW GAME JAM 2024", mu_rect(32, 32, 194, 90), (MU_OPT_NOINTERACT | MU_OPT_NOCLOSE) ))
     {
         mu_ctx._style.colors[MU_COLOR_TEXT]  = pack_color_to_mu(WHITE);
-        if (mu_header_ex(&mu_ctx, "INFO", MU_OPT_CLOSED | MU_OPT_AUTOSIZE)) {
+        if (mu_header_ex(&mu_ctx, "INFO", MU_OPT_EXPANDED | MU_OPT_AUTOSIZE)) {
             mu_ctx._style.colors[MU_COLOR_TEXT]  = pack_color_to_mu(YELLOW);
             mu_label(&mu_ctx, "Yo, what up?");
         }
 
         mu_ctx._style.colors[MU_COLOR_TEXT]  = pack_color_to_mu(WHITE);
-        if (mu_header_ex(&mu_ctx, "STATS", MU_OPT_CLOSED | MU_OPT_AUTOSIZE)) {
+        if (mu_header_ex(&mu_ctx, "STATS", MU_OPT_EXPANDED | MU_OPT_AUTOSIZE)) {
             mu_ctx._style.colors[MU_COLOR_TEXT]  = pack_color_to_mu(GREEN);
             float fps = display_get_fps();
 
@@ -149,9 +163,14 @@ void ui_update(void)
 
     // You can create windows at any point in your game-logic.
     // This does not render the window directly, which is handled later in a single batch.
-    ui_main_menu();
+    mu64_set_font_idx(ID_DEFAULT);
     ui_textbox();
+    mu64_end_frame();
+    mu64_draw();
 
+    mu64_start_frame();
+    mu64_set_font_idx(ID_TITLE);
+    ui_main_menu();
     mu64_end_frame();
 }
 
