@@ -64,6 +64,7 @@ def save(context, path, out_hulls, out_meshes):
 	jsonObject["constraints"] = []
 	jsonObject["convex_hulls"] = []
 	jsonObject["meshes"] = []
+	jsonObject["tags"] = []
 
 	for obj in scene.objects:
 		print("DUMPING INFO FOR ", obj.name)
@@ -82,6 +83,8 @@ def save(context, path, out_hulls, out_meshes):
 			rigidBodyObject["friction"] = obj.rigid_body.friction
 			rigidBodyObject["restitution"] = obj.rigid_body.restitution
 			rigidBodyObject["collision_shape"] = obj.rigid_body.collision_shape
+			
+			rigidBodyObject["attachments"] = []
 
 			if obj.rigid_body.collision_shape == 'CONVEX_HULL':
 				rigidBodyObject["hull_name"] = obj.data.name
@@ -145,6 +148,16 @@ def save(context, path, out_hulls, out_meshes):
 					jsonObject["meshes"].append(meshObject)
 					bm.free()
 					del bm
+					
+			for currentChild in obj.children:
+				if currentChild.type == 'EMPTY' and currentChild.empty_display_type == 'ARROWS':
+					attachmentObject = {}
+					attachmentObject["name"] = currentChild.name
+					tOffset, rOffset = getOffsetFromAToB(currentChild.parent, currentChild)
+					attachmentObject["position"] = writeVec3Flipped(tOffset)
+					attachmentObject["orientation"] = writeQuaternion(rOffset)
+			
+					rigidBodyObject["attachments"].append(attachmentObject)
 
 		if obj.rigid_body_constraint is not None:
 			rigidBodyConstraintObject = {}
@@ -238,6 +251,15 @@ def save(context, path, out_hulls, out_meshes):
 					rigidBodyConstraintObject["spring_damping_ang_z"] = obj.rigid_body_constraint.spring_damping_ang_z
 
 			jsonObject["constraints"].append(rigidBodyConstraintObject)
+
+		if obj.type == 'EMPTY' and obj.empty_display_type == 'ARROWS':
+			attachmentObject = {}
+			attachmentObject["name"] = obj.name
+			attachmentObject["position"] = writeVec3Flipped(obj.location)
+			attachmentObject["orientation"] = writeQuaternion(obj.rotation_quaternion)
+	
+			jsonObject["tags"].append(attachmentObject)
+
 
 	jsonText = json.dumps(jsonObject, indent=4)
 	f = open(path, 'w')
