@@ -1,3 +1,4 @@
+import io
 import os
 import json
 import mathutils
@@ -36,6 +37,18 @@ def writeQuaternion(inQuaternion):
 	engine_quat.normalize()
 	# NOTE: Y and Z have been flipped due to Blender's axes.
 	return {"x": engine_quat[1], "y": engine_quat[3], "z": -engine_quat[2], "w": engine_quat[0]}
+	
+def writeTxtQuaternion(inQuaternion, buffer):
+	conversion_matrix = mathutils.Matrix(((1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1)))
+
+	axis = mathutils.Vector((1, 0, 0))  # Example: X-axis
+	angle_radians = 0#-1.5708  # -90 degrees
+	quat3 = mathutils.Quaternion(axis, angle_radians)
+
+	engine_quat = quat3 @ inQuaternion
+	engine_quat.normalize()
+	
+	buffer.write("\trot: " + str(engine_quat[1]) + " " + str(engine_quat[3]) + " " + str(-engine_quat[2]) + " " + str(engine_quat[0]))
 
 
 	# Below is the original code. The position and orientation of bodies seems correct, but breaks when any rotation is added.
@@ -64,6 +77,9 @@ def save(context, path, out_hulls, out_meshes):
 	jsonObject["constraints"] = []
 	jsonObject["convex_hulls"] = []
 	jsonObject["meshes"] = []
+	jsonObject["tags"] = []
+	
+	buffer = io.StringIO()
 
 	for obj in scene.objects:
 		print("DUMPING INFO FOR ", obj.name)
@@ -82,6 +98,15 @@ def save(context, path, out_hulls, out_meshes):
 			rigidBodyObject["friction"] = obj.rigid_body.friction
 			rigidBodyObject["restitution"] = obj.rigid_body.restitution
 			rigidBodyObject["collision_shape"] = obj.rigid_body.collision_shape
+
+			buffer.write("shape:\t" + obj.rigid_body.collision_shape)
+			buffer.write("\tname: " + obj.name)
+			buffer.write("\tpos: " + str(obj.location[0]) + " " + str(obj.location[2]) + " " + str(-obj.location[1]))
+			buffer.write("\tdim: " + str(obj.dimensions[0]) + " " + str(obj.dimensions[2]) + " " + str(-obj.dimensions[1]))
+			buffer.write("\trot: " + str(obj.dimensions[0]) + " " + str(obj.dimensions[2]) + " " + str(-obj.dimensions[1]))
+			buffer.write("\n")
+
+			rigidBodyObject["attachments"] = []
 
 			if obj.rigid_body.collision_shape == 'CONVEX_HULL':
 				rigidBodyObject["hull_name"] = obj.data.name
@@ -145,6 +170,16 @@ def save(context, path, out_hulls, out_meshes):
 					jsonObject["meshes"].append(meshObject)
 					bm.free()
 					del bm
+					
+			for currentChild in obj.children:
+				if currentChild.type == 'EMPTY' and currentChild.empty_display_type == 'ARROWS':
+					attachmentObject = {}
+					attachmentObject["name"] = currentChild.name
+					tOffset, rOffset = getOffsetFromAToB(currentChild.parent, currentChild)
+					attachmentObject["position"] = writeVec3Flipped(tOffset)
+					attachmentObject["orientation"] = writeQuaternion(rOffset)
+			
+					rigidBodyObject["attachments"].append(attachmentObject)
 
 		if obj.rigid_body_constraint is not None:
 			rigidBodyConstraintObject = {}
@@ -239,10 +274,33 @@ def save(context, path, out_hulls, out_meshes):
 
 			jsonObject["constraints"].append(rigidBodyConstraintObject)
 
+		if obj.type == 'EMPTY' and obj.empty_display_type == 'ARROWS':
+			attachmentObject = {}
+			attachmentObject["name"] = obj.name
+			attachmentObject["position"] = writeVec3Flipped(obj.location)
+			attachmentObject["orientation"] = writeQuaternion(obj.rotation_quaternion)
+
+			jsonObject["tags"].append(attachmentObject)
+
+			buffer.write("tag:")
+			buffer.write("\tname: " + obj.name)
+			buffer.write("\tpos: " + str(obj.location[0]) + " " + str(obj.location[2]) + " " + str(-obj.location[1]))
+			buffer.write("\tdim: " + str(obj.dimensions[0]) + " " + str(obj.dimensions[2]) + " " + str(-obj.dimensions[1]))
+			writeTxtQuaternion(obj.rotation_quaternion, buffer)
+			buffer.write("\n")
+
+
 	jsonText = json.dumps(jsonObject, indent=4)
 	f = open(path, 'w')
 	f.write(jsonText)
 	f.close()
+
+	textContent = buffer.getvalue()
+	txt_path = os.path.splitext(path)[0] + '.txt'
+	with open(txt_path, "w") as f:
+		f.write(textContent)
+	buffer.close()
+	
 	return {'FINISHED'}
 
 from bpy_extras.io_utils import ExportHelper
