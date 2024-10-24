@@ -81,7 +81,11 @@ def save(context, path, out_hulls, out_meshes):
 	
 	buffer = io.StringIO()
 
-	for obj in scene.objects:
+	objects_with_rigid_body = [obj for obj in scene.objects if obj.rigid_body is not None]
+
+	buffer.write("shapeCount:\t" + str(len(objects_with_rigid_body)) + "\n")
+
+	for obj in objects_with_rigid_body:
 		print("DUMPING INFO FOR ", obj.name)
 		if obj.rigid_body is not None:
 			transform = obj.matrix_world
@@ -103,7 +107,7 @@ def save(context, path, out_hulls, out_meshes):
 			buffer.write("\tname: " + obj.name)
 			buffer.write("\tpos: " + str(obj.location[0]) + " " + str(obj.location[2]) + " " + str(-obj.location[1]))
 			buffer.write("\tdim: " + str(obj.dimensions[0]) + " " + str(obj.dimensions[2]) + " " + str(-obj.dimensions[1]))
-			buffer.write("\trot: " + str(obj.dimensions[0]) + " " + str(obj.dimensions[2]) + " " + str(-obj.dimensions[1]))
+			writeTxtQuaternion(quaternion, buffer)
 			buffer.write("\n")
 
 			rigidBodyObject["attachments"] = []
@@ -274,6 +278,12 @@ def save(context, path, out_hulls, out_meshes):
 
 			jsonObject["constraints"].append(rigidBodyConstraintObject)
 
+	tagObjects = [obj for obj in scene.objects if obj.type == 'EMPTY' and obj.empty_display_type == 'ARROWS']
+
+	buffer.write("tagCount:\t" + str(len(tagObjects)) + "\n")
+
+	for obj in tagObjects:
+		print("DUMPING INFO FOR ", obj.name) 
 		if obj.type == 'EMPTY' and obj.empty_display_type == 'ARROWS':
 			attachmentObject = {}
 			attachmentObject["name"] = obj.name
